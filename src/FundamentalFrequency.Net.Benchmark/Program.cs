@@ -1,26 +1,35 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿// MIT License
+// 
+// Copyright (c) 2023 Gleb Lebedev
+// 
+// This software is licensed under the MIT License.
+// For more details, visit: https://opensource.org/licenses/MIT
+
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 
-namespace FundamentalFrequency.Net
+namespace FundamentalFrequency
 {
     public class YinBenchmark
     {
-        private double[] signal;
+        private float[] _signal;
+        YinAlgorithm _yin;
 
         public YinBenchmark()
         {
-            signal = new double[1024];
+            _yin = new YinAlgorithm(new YinOptions(44100, 0.1f));
+            _signal = new float[1024];
             Random rand = new Random();
-            for (int i = 0; i < signal.Length; i++)
+            for (int i = 0; i < _signal.Length; i++)
             {
-                signal[i] = rand.NextDouble();
+                _signal[i] = rand.NextSingle();
             }
         }
 
         [Benchmark]
         public void BenchmarkYinPitch()
         {
-            YinAlgorithm.YinPitch(signal, 0.1, 44100, out var probability);
+            _yin.ExtractFundamentalFrequency(_signal);
         }
     }
 

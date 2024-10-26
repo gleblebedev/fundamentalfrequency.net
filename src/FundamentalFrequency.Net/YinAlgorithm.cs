@@ -1,101 +1,118 @@
-﻿namespace FundamentalFrequency.Net
-{
+﻿// MIT License
+// 
+// Copyright (c) 2023 Gleb Lebedev
+// 
+// This software is licensed under the MIT License.
+// For more details, visit: https://opensource.org/licenses/MIT
 
-public class YinAlgorithm
+namespace FundamentalFrequency
 {
-    public static double[] DifferenceFunction(double[] signal, int lag)
+    public interface IFundamentalFrequencyExtractor
     {
-        int N = signal.Length;
-        double[] difference = new double[N - lag];
 
-        for (int tau = 0; tau < lag; tau++)
+    }
+    public class YinAlgorithm: IFundamentalFrequencyExtractor
+    {
+        private readonly YinOptions _options;
+
+        public YinAlgorithm(YinOptions options)
         {
-            difference[tau] = 0;
-            for (int j = 0; j < N - lag; j++)
-            {
-                double delta = signal[j] - signal[j + tau];
-                difference[tau] += delta * delta;
-            }
+            _options = options;
         }
 
-        return difference;
-    }
-
-    public static double[] CumulativeMeanNormalizedDifferenceFunction(double[] difference)
-    {
-        int N = difference.Length;
-        double[] cmndf = new double[N];
-        cmndf[0] = 1;
-
-        for (int tau = 1; tau < N; tau++)
+        public Result ExtractFundamentalFrequency(float[] signal)
         {
-            double cumulativeSum = 0;
-            for (int j = 1; j <= tau; j++)
+            float[] difference = DifferenceFunction(signal, signal.Length / 2);
+            float[] cmndf = CumulativeMeanNormalizedDifferenceFunction(difference);
+            float probability = 0;
+            int tau = AbsoluteThreshold(cmndf, _options.Threshold, out probability);
+
+            if (tau != -1)
             {
-                cumulativeSum += difference[j];
+                return new Result(_options.SamplesPerSecond / (float)ParabolicInterpolation(cmndf, tau), (float)probability);
             }
 
-            cmndf[tau] = difference[tau] * tau / cumulativeSum;
+            return Result.Failure; // No pitch found
         }
 
-        return cmndf;
-    }
-
-    public static int AbsoluteThreshold(double[] cmndf, double threshold, out double probability)
-    {
-        for (int tau = 0; tau < cmndf.Length; tau++)
+        private float[] DifferenceFunction(float[] signal, int lag)
         {
-            if (cmndf[tau] < threshold)
+            int N = signal.Length;
+            float[] difference = new float[N - lag];
+
+            for (int tau = 0; tau < lag; tau++)
             {
-                while (tau + 1 < cmndf.Length && cmndf[tau + 1] < cmndf[tau])
+                difference[tau] = 0;
+                for (int j = 0; j < N - lag; j++)
                 {
-                    tau++;
+                    float delta = signal[j] - signal[j + tau];
+                    difference[tau] += delta * delta;
+                }
+            }
+
+            return difference;
+        }
+
+        private float[] CumulativeMeanNormalizedDifferenceFunction(float[] difference)
+        {
+            int N = difference.Length;
+            float[] cmndf = new float[N];
+            cmndf[0] = 1;
+
+            for (int tau = 1; tau < N; tau++)
+            {
+                float cumulativeSum = 0;
+                for (int j = 1; j <= tau; j++)
+                {
+                    cumulativeSum += difference[j];
                 }
 
-                probability = 1.0 - cmndf[tau];
-                return tau;
+                cmndf[tau] = difference[tau] * tau / cumulativeSum;
             }
+
+            return cmndf;
         }
 
-        probability = 0.0;
-        return -1; // If no valid period is found
-    }
-
-    public static double ParabolicInterpolation(double[] cmndf, int tau)
-    {
-        int x0 = tau > 0 ? tau - 1 : tau;
-        int x2 = tau < cmndf.Length - 1 ? tau + 1 : tau;
-
-        if (x0 == tau)
+        private int AbsoluteThreshold(float[] cmndf, float threshold, out float probability)
         {
-            return cmndf[tau] <= cmndf[x2] ? tau : x2;
+            for (int tau = 0; tau < cmndf.Length; tau++)
+            {
+                if (cmndf[tau] < threshold)
+                {
+                    while (tau + 1 < cmndf.Length && cmndf[tau + 1] < cmndf[tau])
+                    {
+                        tau++;
+                    }
+
+                    probability = 1.0f - cmndf[tau];
+                    return tau;
+                }
+            }
+
+            probability = 0.0f;
+            return -1; // If no valid period is found
         }
-        if (x2 == tau)
+
+        private float ParabolicInterpolation(float[] cmndf, int tau)
         {
-            return cmndf[tau] <= cmndf[x0] ? tau : x0;
+            int x0 = tau > 0 ? tau - 1 : tau;
+            int x2 = tau < cmndf.Length - 1 ? tau + 1 : tau;
+
+            if (x0 == tau)
+            {
+                return cmndf[tau] <= cmndf[x2] ? tau : x2;
+            }
+            if (x2 == tau)
+            {
+                return cmndf[tau] <= cmndf[x0] ? tau : x0;
+            }
+
+            float a = cmndf[x0];
+            float b = cmndf[tau];
+            float c = cmndf[x2];
+
+            return tau + 0.5f * (a - c) / (a - 2 * b + c);
         }
-
-        double a = cmndf[x0];
-        double b = cmndf[tau];
-        double c = cmndf[x2];
-
-        return tau + 0.5 * (a - c) / (a - 2 * b + c);
     }
-
-    public static double YinPitch(double[] signal, double threshold, int samplingRate, out double probability)
-    {
-        double[] difference = DifferenceFunction(signal, signal.Length/2);
-        double[] cmndf = CumulativeMeanNormalizedDifferenceFunction(difference);
-        probability = 0;
-        int tau = AbsoluteThreshold(cmndf, threshold, out probability);
-
-        if (tau != -1)
-        {
-            return samplingRate / ParabolicInterpolation(cmndf, tau);
-        }
-
-        return -1; // No pitch found
-    }
-}
 
 }
