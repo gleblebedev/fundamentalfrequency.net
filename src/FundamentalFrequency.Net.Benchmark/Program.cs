@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 
-namespace Yin.Net
+namespace FundamentalFrequency.Net
 {
     public class YinBenchmark
     {

@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Yin.Net\Yin.Net.csproj" />
+    <ProjectReference Include="..\FundamentalFrequency.Net\FundamentalFrequency.Net.csproj" />
   </ItemGroup>
 
   <ItemGroup>

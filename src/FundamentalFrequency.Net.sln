@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yin.Net", "Yin.Net\Yin.Net.csproj", "{F687C7BB-0697-4121-B264-141184FF186E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundamentalFrequency.Net", "FundamentalFrequency.Net\FundamentalFrequency.Net.csproj", "{F687C7BB-0697-4121-B264-141184FF186E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yin.Net.Tests", "Yin.Net.Tests\Yin.Net.Tests.csproj", "{B131AB0F-3BAA-4FAA-80FF-16AFF69708CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundamentalFrequency.Net.Tests", "FundamentalFrequency.Net.Tests\FundamentalFrequency.Net.Tests.csproj", "{B131AB0F-3BAA-4FAA-80FF-16AFF69708CD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yin.Net.Benchmark", "Yin.Net.Benchmark\Yin.Net.Benchmark.csproj", "{947F3346-BB3D-4E33-AD1A-767CDCC5F6B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundamentalFrequency.Net.Benchmark", "FundamentalFrequency.Net.Benchmark\FundamentalFrequency.Net.Benchmark.csproj", "{947F3346-BB3D-4E33-AD1A-767CDCC5F6B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

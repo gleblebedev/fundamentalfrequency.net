@@ -1,4 +1,5 @@
-﻿namespace Yin.Net;
+﻿namespace FundamentalFrequency.Net
+{
 
 public class YinAlgorithm
 {
@@ -95,4 +96,6 @@ public class YinAlgorithm
 
         return -1; // No pitch found
     }
+}
+
 }

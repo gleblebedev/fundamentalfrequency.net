@@ -1,4 +1,5 @@
-﻿namespace Yin.Net.Tests;
+﻿namespace FundamentalFrequency.Net.Tests
+{
 
 [TestFixture]
 public class YinTests
@@ -26,6 +27,27 @@ public class YinTests
     }
 
     [Test]
+    [TestCase(220.0f, 0, 4f)]
+    [TestCase(330.0f, 0, 2.5f)]
+    public void TestYinWithNoise(float frequency, float offset, float fullPeriods)
+    {
+        int samplesPerSecond = 44100;
+        float samplesPerPeriod = samplesPerSecond / frequency;
+        float threshold = 0.15f;
+        int bufferSize = (int)(samplesPerPeriod * fullPeriods);
+        var signal = new double[bufferSize];
+        var rnd = new Random(0);
+        for (int i = 0; i < bufferSize; i++)
+        {
+            signal[i] = MathF.Cos((MathF.PI * 2.0f) * (i / samplesPerPeriod + offset)) + (rnd.NextSingle()-0.5f)*0.1f;
+        }
+
+        var result = YinAlgorithm.YinPitch(signal, threshold, samplesPerSecond, out var probability);
+
+        Assert.AreEqual(frequency, result, frequency * threshold);
+    }
+
+    [Test]
     [TestCase(220.0f, 0.2f, 1.4f)]
     [TestCase(330.0f, 0.2f, 1.5f)]
     public void TestYinWithInsufficientData(float frequency, float offset, float fullPeriods)
@@ -44,4 +66,6 @@ public class YinTests
 
         Assert.AreEqual(-1, result, 1e-6f);
     }
+}
+
 }
