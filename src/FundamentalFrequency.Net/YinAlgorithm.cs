@@ -11,7 +11,8 @@ namespace FundamentalFrequency
     {
 
     }
-    public class YinAlgorithm: IFundamentalFrequencyExtractor
+
+    public class YinAlgorithm : IFundamentalFrequencyExtractor
     {
         private readonly YinOptions _options;
 
@@ -29,7 +30,8 @@ namespace FundamentalFrequency
 
             if (tau != -1)
             {
-                return new Result(_options.SamplesPerSecond / (float)ParabolicInterpolation(cmndf, tau), (float)probability);
+                return new Result(_options.SamplesPerSecond / (float)ParabolicInterpolation(cmndf, tau),
+                    (float)probability);
             }
 
             return Result.Failure; // No pitch found
@@ -102,6 +104,7 @@ namespace FundamentalFrequency
             {
                 return cmndf[tau] <= cmndf[x2] ? tau : x2;
             }
+
             if (x2 == tau)
             {
                 return cmndf[tau] <= cmndf[x0] ? tau : x0;
